@@ -31,7 +31,7 @@ class App extends Component {
       return;
     }
 
-    fetch(`http://opentable.herokuapp.com/api/restaurants?city=${e.city}`)
+    fetch(`https://opentable.herokuapp.com/api/restaurants?city=${e.city}`)
     .then(res => res.json())
     .then((data) => {
       // Filter the result if there is a value for Refine
