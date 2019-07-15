@@ -24,7 +24,6 @@ class App extends Component {
   }
 
   apiCall = (e) => {
-    
     if (!e.city) {
       document.querySelector('#city').classList.add('invalid');
       this.setState({ restaurants: [], submitText: 'Submit' });
@@ -58,7 +57,7 @@ class App extends Component {
     return (
         <div className="container">
           <SearchForm apiCall={this.apiCall} submitText={this.state.submitText} />
-          <table>
+          <table summary="List of restaurants from OpenTable API">
             <thead>
               <tr>
                   <th>Name</th>

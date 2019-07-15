@@ -45,7 +45,7 @@ describe('App component', () => {
       submitText: 'Update'
     };
     const wrapper = mountWithProvider(<SearchForm {...props} />)();
-    expect(wrapper.find('SearchForm a').text()).toEqual('Update');
+    expect(wrapper.find('SearchForm button').text()).toEqual('Update');
   });  
 
   it('should render Restaurant List Component', () => {

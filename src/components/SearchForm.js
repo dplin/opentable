@@ -12,9 +12,7 @@ export class SearchForm extends Component {
             }
         }
     }
-    setCustomValidity = (msg) => {
-        console.log(msg);
-    }
+    
     updateValue = (event) => {
         // Set state
         this.setState({ value: 
@@ -53,7 +51,7 @@ export class SearchForm extends Component {
                         </div>
                     </div>
                     <div className="row">
-                        <a className="waves-effect waves-light btn-large" onClick={this.props.apiCall.bind(this, this.state.value)}>{this.props.submitText}</a>
+                        <button type="button" className="waves-effect waves-light btn-large" role="button" onClick={this.props.apiCall.bind(this, this.state.value)}>{this.props.submitText}</button>
                     </div>
                 </form>
             </div>
