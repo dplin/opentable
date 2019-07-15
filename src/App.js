@@ -1,58 +1,94 @@
 import React, { Component } from 'react';
-import Rest from './components/Rest';
-import Table from './components/Table';
+import SearchForm from './components/SearchForm';
+import RestaurantList from './components/RestaurantList';
 import './App.css';
+import ACTIONS from "./modules/action";
+import { connect } from "react-redux";
 
 class App extends Component {
-  state = {
-    restaurants: []
+  constructor(props){
+    super(props);
+
+    this.state = {
+      restaurants: [],
+      submitText: 'Submit'
+    }
+  }
+  
+  filterRestaurantList = (data, needle) => {
+    return data.filter(item =>
+      Object.keys(item).some(key => 
+        String(item[key]).toLowerCase().includes(needle.toLowerCase())
+      )
+    )    
   }
 
   apiCall = (e) => {
+    
+    if (!e.city) {
+      document.querySelector('#city').classList.add('invalid');
+      this.setState({ restaurants: [], submitText: 'Submit' });
+      this.props.deleteAllItems();
+      return;
+    }
+
     fetch(`http://opentable.herokuapp.com/api/restaurants?city=${e.city}`)
     .then(res => res.json())
     .then((data) => {
-      //this.setState({ contacts: data })
-      console.log(data);
-
+      // Filter the result if there is a value for Refine
       if (e.refine) {
-        let refinedResult = data.restaurants.filter(x => 
-          x.area.toLowerCase().includes(e.refine.toLowerCase()) || 
-          x.address.toLowerCase().includes(e.refine.toLowerCase()) || 
-          x.name.toLowerCase().includes(e.refine.toLowerCase())
-        )
-        this.res = refinedResult;
+        this.res = this.filterRestaurantList(data.restaurants, e.refine);
       } else {
         this.res = data.restaurants;
       }
-      
+
+      // Update the submit button text.
+      this.setState({ submitText: 'Update' });
+
+      // Update the restaurant list.
       this.setState({ restaurants: this.res });
 
-      console.log(this.res);
+      // Update redux store.
+      this.props.addAllItems(this.state.restaurants);
     })
-    .catch(console.log)    
+    .catch(console.log)
   }
   
   render() {
     return (
-      <div className="container">
-        <Rest apiCall={this.apiCall}/>
-        <table>
-          <thead>
-            <tr>
-                <th>Name</th>
-                <th>Area</th>
-                <th>Address</th>
-                <th>Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            <Table restaurants={this.state.restaurants} />
-          </tbody>
-        </table>
-      </div>
+        <div className="container">
+          <SearchForm apiCall={this.apiCall} submitText={this.state.submitText} />
+          <table>
+            <thead>
+              <tr>
+                  <th>Name</th>
+                  <th>Area</th>
+                  <th>Address</th>
+                  <th>Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <RestaurantList restaurants={this.state.restaurants} />
+            </tbody>
+          </table>
+        </div>
     );
   }
 }
 
-export default App;
+const mapStateToProps = state => ({
+  restaurants: state.restaurants
+});
+
+const mapDispatchToProps = dispatch => ({
+  addAllItems: item => dispatch(ACTIONS.addAllItems(item)),
+  deleteAllItems: () => dispatch(ACTIONS.deleteAllItems()),
+});
+
+const AppContainer = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);
+
+export default AppContainer;
+
